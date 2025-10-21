@@ -32,7 +32,7 @@ app.use((req, res, next) => {
   ) {
     next();
   } else {
-    console.warn( Acceso bloqueado desde IP: ${clientIP});
+    console.warn(' Acceso bloqueado desde IP: ${clientIP}');
     return res.status(403).json({ message: "Acceso denegado: IP no autorizada" });
   }
 });
@@ -70,5 +70,6 @@ app.get("/register", (req, res) => {
 app.listen(PORT, () => {
   console.log(Servidor corriendo en http://localhost:${PORT});
 });
+
 
 
