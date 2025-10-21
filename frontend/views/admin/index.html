@@ -1,104 +1,301 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Panel de Administración - Tienda</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    />
-    <link rel="stylesheet" href="/css/admin.css" />
-  </head>
-  <body class="bg-gray-100 min-h-screen">
-    <!-- Header -->
-    <header class="bg-white shadow-sm">
-      <div
-        class="container mx-auto px-4 py-4 flex justify-between items-center"
-      >
-        <h1 class="text-2xl font-bold text-blue-600">
-          Panel de Administración
-        </h1>
-        <div class="flex items-center space-x-4">
-          <span id="userName" class="text-gray-700"></span>
-          <button
-            onclick="logout()"
-            class="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
-          >
-            <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
-          </button>
-        </div>
-      </div>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Administración - Tienda</title>
 
-    <!-- Navigation -->
-    <nav class="bg-blue-600 text-white">
-      <div class="container mx-auto px-4">
-        <div class="flex space-x-8 py-3">
-          <button
-            onclick="showSection('dashboard')"
-            class="px-4 py-2 hover:bg-blue-700 rounded transition nav-link active"
-          >
-            <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-          </button>
-          <button
-            onclick="showSection('categorias')"
-            class="px-4 py-2 hover:bg-blue-700 rounded transition nav-link"
-          >
-            <i class="fas fa-tags mr-2"></i>Categorías
-          </button>
-          <button
-            onclick="showSection('productos')"
-            class="px-4 py-2 hover:bg-blue-700 rounded transition nav-link"
-          >
-            <i class="fas fa-box mr-2"></i>Productos
-          </button>
-        </div>
-      </div>
-    </nav>
+  <!-- ✅ CSS personalizado -->
+  <style>
+    :root {
+      --primary: #4a90e2;
+      --primary-dark: #3a78c2;
+      --secondary: #f4f6f8;
+      --text: #333;
+      --muted: #888;
+      --danger: #e74c3c;
+      --success: #2ecc71;
+      --warning: #f39c12;
+      --bg-light: #ffffff;
+      --bg-dark: #f0f0f0;
+    }
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-      <!-- Dashboard Section -->
-      <div id="dashboard-section" class="section active">
-        <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div class="bg-white p-6 rounded-lg shadow">
-            <div class="flex items-center">
-              <div class="p-3 bg-blue-100 rounded-full">
-                <i class="fas fa-box text-blue-600 text-2xl"></i>
-              </div>
-              <div class="ml-4">
-                <h3 class="text-2xl font-bold" id="totalProducts">0</h3>
-                <p class="text-gray-600">Productos Totales</p>
-              </div>
-            </div>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--secondary);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: var(--bg-light);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+
+    header button {
+      background-color: #fdecea;
+      color: var(--danger);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    header button:hover {
+      background-color: #f8d7da;
+    }
+
+    nav {
+      background-color: var(--primary);
+      padding: 0.8rem 2rem;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: white;
+      margin-right: 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+
+    nav button:hover, nav button.active {
+      background-color: var(--primary-dark);
+    }
+
+    main {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--bg-light);
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+    }
+
+    .icon-box {
+      background: var(--secondary);
+      padding: 0.8rem;
+      border-radius: 50%;
+      margin-right: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .icon-box i {
+      color: var(--primary);
+    }
+
+    .card h3 {
+      font-size: 1.5rem;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    thead {
+      background-color: #f9fafb;
+    }
+
+    th {
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    button.primary {
+      background-color: var(--success);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+
+    button.primary:hover {
+      background-color: #27ae60;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    .modal-content h3 {
+      margin-bottom: 1rem;
+    }
+
+    .modal-content form input,
+    .modal-content form textarea,
+    .modal-content form select {
+      width: 100%;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .modal-content .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+
+    .modal-content .actions button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-cancel {
+      background-color: #e0e0e0;
+    }
+
+    .btn-save {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn-cancel:hover {
+      background-color: #d5d5d5;
+    }
+
+    .btn-save:hover {
+      background-color: var(--primary-dark);
+    }
+  </style>
+
+  <!-- Font Awesome para íconos -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header>
+    <h1>Panel de Administración</h1>
+    <div>
+      <span id="userName"></span>
+      <button onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+      </button>
+    </div>
+  </header>
+
+  <!-- Navegación -->
+  <nav>
+    <button onclick="showSection('dashboard')" class="active">Dashboard</button>
+    <button onclick="showSection('categorias')">Categorías</button>
+    <button onclick="showSection('productos')">Productos</button>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main>
+    <!-- Sección Dashboard -->
+    <div id="dashboard-section" class="section active">
+      <h2>Dashboard</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="icon-box">
+            <i class="fas fa-box"></i>
           </div>
-          <div class="bg-white p-6 rounded-lg shadow">
-            <div class="flex items-center">
-              <div class="p-3 bg-green-100 rounded-full">
-                <i class="fas fa-tags text-green-600 text-2xl"></i>
-              </div>
-              <div class="ml-4">
-                <h3 class="text-2xl font-bold" id="totalCategories">0</h3>
-                <p class="text-gray-600">Categorías</p>
-              </div>
-            </div>
+          <div>
+            <h3 id="totalProducts">0</h3>
+            <p>Productos Totales</p>
           </div>
-          <div class="bg-white p-6 rounded-lg shadow">
-            <div class="flex items-center">
-              <div class="p-3 bg-purple-100 rounded-full">
-                <i class="fas fa-shopping-cart text-purple-600 text-2xl"></i>
-              </div>
-              <div class="ml-4">
-                <h3 class="text-2xl font-bold" id="totalOrders">0</h3>
-                <p class="text-gray-600">Pedidos</p>
-              </div>
-            </div>
+        </div>
+        <div class="card">
+          <div class="icon-box">
+            <i class="fas fa-tags"></i>
+          </div>
+          <div>
+            <h3 id="totalCategories">0</h3>
+            <p>Categorías</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="icon-box">
+            <i class="fas fa-shopping-cart"></i>
+          </div>
+          <div>
+            <h3 id="totalOrders">0</h3>
+            <p>Pedidos</p>
           </div>
         </div>
       </div>
+    </div>
 
       <!-- Categorías Section -->
       <div id="categorias-section" class="section">
